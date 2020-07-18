@@ -5,22 +5,15 @@ var armies = [
 var fight = function(armyA, armyB) {
     var armyAPostFight = { name: armyA.name };
     var armyBPostFight = { name: armyB.name };
-    armyAPostFight.archers = armyA.archers - armyB.mages;
-    armyBPostFight.archers = armyB.archers - armyA.mages;
-    armyAPostFight.melee = armyA.melee - armyBPostFight.archers;
-    armyBPostFight.melee = armyB.melee - armyAPostFight.archers;
-    armyAPostFight.mages = armyA.mages - armyBPostFight.melee;
-    armyBPostFight.mages = armyB.mages - armyAPostFight.melee;
+    armyAPostFight.archers = Math.max(0, armyA.archers - armyB.mages);
+    armyBPostFight.archers = Math.max(0, armyB.archers - armyA.mages);
+    armyAPostFight.melee = Math.max(0, armyA.melee - armyBPostFight.archers);
+    armyBPostFight.melee = Math.max(0, armyB.melee - armyAPostFight.archers);
+    armyAPostFight.mages = Math.max(0, armyA.mages - armyBPostFight.melee);
+    armyBPostFight.mages = Math.max(0, armyB.mages - armyAPostFight.melee);
     armyAPostFight.total = armyAPostFight.archers + armyAPostFight.mages + armyAPostFight.melee;
     armyBPostFight.total = armyBPostFight.archers + armyBPostFight.mages + armyBPostFight.melee;
-    armyAPostFight.archers = Math.max(0, armyAPostFight.archers);
-    armyBPostFight.archers = Math.max(0, armyBPostFight.archers);
-    armyAPostFight.melee = Math.max(0, armyAPostFight.melee);
-    armyBPostFight.melee = Math.max(0, armyBPostFight.melee);
-    armyAPostFight.mages = Math.max(0, armyAPostFight.mages);
-    armyBPostFight.mages = Math.max(0, armyBPostFight.mages);
-    armyAPostFight.total = Math.max(0, armyAPostFight.total);
-    armyBPostFight.total = Math.max(0, armyBPostFight.total);
+    
     return {
         armyA: armyAPostFight,
         armyB: armyBPostFight,
