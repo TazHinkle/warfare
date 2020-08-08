@@ -1,10 +1,15 @@
 var armies = [
-    { name: 'bob', archers: 33, mages: 12, melee: 20 },
-    { name: 'goats', archers: 33, mages: 22, melee: 20 },
+    { name: 'bob', archers: 33, mages: 12, melee: 20, wins: 0 },
+    { name: 'goats', archers: 33, mages: 22, melee: 20, wins: 0 },
 ];
+
+function jsonClone(input) {
+    return JSON.parse(JSON.stringify(input));
+}
+
 var fight = function(armyA, armyB) {
-    var armyAPostFight = { name: armyA.name };
-    var armyBPostFight = { name: armyB.name };
+    var armyAPostFight = jsonClone(armyA);
+    var armyBPostFight = jsonClone(armyB);
     armyAPostFight.archers = Math.max(0, armyA.archers - armyB.mages);
     armyBPostFight.archers = Math.max(0, armyB.archers - armyA.mages);
     armyAPostFight.melee = Math.max(0, armyA.melee - armyBPostFight.archers);
@@ -13,15 +18,20 @@ var fight = function(armyA, armyB) {
     armyBPostFight.mages = Math.max(0, armyB.mages - armyAPostFight.melee);
     armyAPostFight.total = armyAPostFight.archers + armyAPostFight.mages + armyAPostFight.melee;
     armyBPostFight.total = armyBPostFight.archers + armyBPostFight.mages + armyBPostFight.melee;
-    
+    var winner;
+    if (armyAPostFight.total > armyBPostFight.total) {
+        winner = armyAPostFight.name;
+        armyAPostFight.wins += 1;
+    } else if(armyAPostFight.total < armyBPostFight.total) {
+        winner = armyBPostFight.name;
+        armyBPostFight.wins += 1;
+    } else {
+        winner = "Tie"
+    }      
     return {
         armyA: armyAPostFight,
         armyB: armyBPostFight,
-        winner: armyAPostFight.total > armyBPostFight.total
-            ? armyAPostFight.name
-            : armyAPostFight.total < armyBPostFight.total
-                ? armyBPostFight.name
-                : "Tie"
+        winner: winner
     };
 }
 console.table(armies);
@@ -34,7 +44,7 @@ var handleHTTPRequest = function(request, response) {
             null,
             "    "
         );
-    } else if (request.url === "/fight") {
+    }else if (request.url === "/fight") {
         var fightResult = fight(armies[0], armies[1]);
         armies[0] = fightResult.armyA;
         armies[1] = fightResult.armyB;
