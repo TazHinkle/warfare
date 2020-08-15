@@ -1,3 +1,7 @@
+const http = require("http");
+const fs = require("fs");
+const port = 3000;
+
 var armies = [
     { name: 'bob', archers: 33, mages: 12, melee: 20, wins: 0 },
     { name: 'goats', archers: 33, mages: 22, melee: 20, wins: 0 },
@@ -54,8 +58,9 @@ var handleHTTPRequest = function(request, response) {
             "    "
         );
     }else if(request.url === "/login") {
-        //create login box that queries armies[] and selects the user based on input.
-    }else if (request.url === "/fight") {
+        //Have a login where a userName is entered and then selected from armies[]
+        result = fs.readFileSync('./login.html');
+    } else if (request.url === "/fight") {
         var fightResult = fight(armies[0], armies[1]);
         armies[0] = fightResult.armyA;
         armies[1] = fightResult.armyB;
@@ -69,9 +74,7 @@ var handleHTTPRequest = function(request, response) {
     }
     response.end(result);
 };
-var http = require("http");
-const { fstat } = require("fs");
+
 var httpServer = http.createServer(handleHTTPRequest);
-var port = 3000;
 console.log("attempting to start an http server on port", port);
 httpServer.listen(port);
