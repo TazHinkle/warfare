@@ -1,0 +1,15 @@
+{
+    "name": "warfare-express",
+    "version": "1.0.0",
+    "description": "/army\r /conscript\r /levelup\r /choose_opponent\r /fight\r /login\r /create_account\r /rage_quit",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "express": "^4.17.1",
+        "xmlhttprequest": "^1.8.0"
+    }
+}

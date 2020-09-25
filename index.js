@@ -1,6 +1,14 @@
 const http = require("http");
 const fs = require("fs");
 const port = 3000;
+// const express = require('express');
+// const app = express();
+// app.get('/', (request, response, next) => {
+// res.send('<h1>Hello</h1>);    
+//})
+// app.listen(port);
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+var xhr = new XMLHttpRequest();
 
 var armies = [
     { name: 'bob', archers: 33, mages: 12, melee: 20, wins: 0 },
@@ -51,15 +59,12 @@ console.table(armies);
 var handleHTTPRequest = function(request, response) {
     var result = "<h1>what up, ma goats</h1>";
     console.log(request.url);
-    if (request.url === "/") {
+    if (request.url === "/main") {
         result = JSON.stringify(
             armies,
             null,
             "    "
         );
-    }else if(request.url === "/login") {
-        //Have a login where a userName is entered and then selected from armies[]
-        result = fs.readFileSync('./login.html');
     } else if (request.url === "/fight") {
         var fightResult = fight(armies[0], armies[1]);
         armies[0] = fightResult.armyA;
@@ -69,6 +74,10 @@ var handleHTTPRequest = function(request, response) {
             null,
             "    "
         );
+    } else if(request.url === "/login" || "/") {
+        //Have a login where a userName is entered and then selected from armies[]
+        result = fs.readFileSync('./login.html');
+        var userName = xhr.open('GET', '/server', true);
     } else {
         response.statusCode = 404;
     }
