@@ -1,4 +1,10 @@
 # armyGame
+
+## Current:
+-[x] hitting submit on login.html loads main
+
+-[ ] name entered on login.html looks for and selects a specific saved army
+
 ## api endpoints
 /army
 /conscript
@@ -18,13 +24,13 @@
  
  -A time based (probably...) system for awarding modification points.
 
-## Other items:
+### Other items:
  -A way to limit how many times one person can be fought (so they don't log in and have no army anymore...)
  
  -A way to match users with opponents of somewhat comparable levels.
  Level up mechanism and limits
 
- # Implement on a Grid
+ ### Implement on a Grid -- shelved
 
  - Create a map
  - Create avatars that can be attached to soldier objects and moved upon a map
