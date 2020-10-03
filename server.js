@@ -52,12 +52,19 @@ var fight = function(armyA, armyB) {
     }
 }
 
+
 app.post('/fight', (request, response) => {
     var fightResult = fight(armies[0], armies[1]);
     armies[0] = fightResult.armyA;
     armies[1] = fightResult.armyB;
     response.json(fightResult);
 });
+
+app.get('/main'), (request, response) => {
+    response.json({
+        doot : true
+    });
+}
 
 app.use(express.static('public'));
 

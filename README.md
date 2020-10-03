@@ -1,9 +1,8 @@
 # armyGame
 
 ## Current:
--[x] hitting submit on login.html loads main
+Event listener to client side.  Server fetch() and then does the things.
 
--[ ] name entered on login.html looks for and selects a specific saved army
 
 ## api endpoints
 /army
