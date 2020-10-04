@@ -1,9 +1,63 @@
-var yourArmy;
+var yourArmy = JSON.parse(localStorage.getItem('yourArmy') || 'null');
+var recruitButtonParent = document.getElementById('recruit');
+recruitButtonParent.addEventListener('click', (event) => {
+    var unitType = event.target.dataset.type;
+    console.log('unitType is', unitType);
+    if(unitType) {
+        recruit(unitType);
+    }
+});
+
+var login = function(formData) {
+    fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+    }).then((response) => {
+        response.json()
+            .then((army) => {
+                yourArmy = army;
+                localStorage.setItem('yourArmy', JSON.stringify(yourArmy));
+                renderUserArmy();
+            });
+    })
+}
+
+if(yourArmy) {
+    login({
+        userName: yourArmy.name
+    });
+}
+
+var recruit = function(unitType) {
+    fetch('/recruit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            unitType: unitType
+        }),
+    }).then((response) => {
+        console.log("recruit response", response);
+        if (response.ok) {
+            response.json()
+                .then((army) => {
+                    yourArmy = army;
+                    localStorage.setItem('yourArmy', JSON.stringify(yourArmy));
+                    renderUserArmy();
+                });
+        }
+    })
+}
+
 var renderUserArmy = function() {
     var logDiv = document.getElementById('login-form');
     logDiv.style.display = "none";
     var userArmyString = renderSingleArmy(yourArmy);
-    document.getElementById('armies').innerHTML = userArmyString;
+    document.getElementById('your-army').innerHTML = userArmyString;
 }
 
 var renderSingleArmy = function(army) {
@@ -42,19 +96,7 @@ var handleLoginSubmit = function(submitEvent) {
     })
     console.log('handleLoginSubmit:', formData);
     submitEvent.preventDefault();
-    fetch('/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-    }).then((response) => {
-        response.json()
-            .then((army) => {
-                yourArmy = army;
-                renderUserArmy();
-            });
-    })
+    login(formData);
 }
 
 var form = document.getElementById('login-form');

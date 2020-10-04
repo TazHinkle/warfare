@@ -1,21 +1,20 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.use(cookieParser());
 
 var armies = [
     { name: 'bob', archers: 33, mages: 12, melee: 20, wins: 0 },
     { name: 'goats', archers: 33, mages: 22, melee: 20, wins: 0 },
 ];
 
-app.post('/login', (request, response) => {
-    console.log('Someone visited /login', request.body);
-    var userName = request.body.userName;
+var findOrMakeArmyByUserName = function(userName) {
     var userArmy = armies.find((army) => {
         return army.name === userName;
     });
-    console.log('userArmy', userArmy);
     if(!userArmy) {
         userArmy = { 
             name: userName, 
@@ -26,7 +25,48 @@ app.post('/login', (request, response) => {
         };
         armies.push(userArmy);
     }
+    return userArmy;
+}
+
+app.post('/login', (request, response) => {
+    console.log('Someone visited /login', request.body);
+    console.log('Here be the cookies', request.cookies);
+    var userName = request.body.userName;
+    var userArmy = findOrMakeArmyByUserName(userName);
+    response.append('Set-Cookie', `userName=${userName}; Path=/; HttpOnly`);
     response.json(userArmy);
+})
+
+app.use((request, response, next) => {
+    var userName = request.cookies.userName;
+    if (userName) {
+        request.userArmy = findOrMakeArmyByUserName(userName);
+        console.log('This user is already logged in', request.userArmy);
+    }
+    next();
+})
+
+var validUnitTypes = ['mages', 'archers', 'melee'];
+app.post('/recruit', (request, response) => {
+    // { 
+    //     unitType: mage, archer, melee
+    // }
+    var userArmy = request.userArmy;
+    var unitType = request.body.unitType;
+    if (!validUnitTypes.includes(unitType)) {
+        response.status(400);
+        response.json({error: 'Unit type is invalid'});
+    } else if(!userArmy) {
+        response.status(403);
+        response.json({error: 'you must be logged in'});
+    } else {
+        console.log('the is the army we are recruiting into', userArmy);
+        
+        if (unitType) {
+            userArmy[unitType] = userArmy[unitType] + 1;
+        }
+        response.json(userArmy);
+    }
 })
 
 app.get('/armies', (request, response) => {
