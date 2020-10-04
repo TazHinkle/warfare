@@ -2,10 +2,32 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
+app.use(express.json());
+
 var armies = [
     { name: 'bob', archers: 33, mages: 12, melee: 20, wins: 0 },
     { name: 'goats', archers: 33, mages: 22, melee: 20, wins: 0 },
 ];
+
+app.post('/login', (request, response) => {
+    console.log('Someone visited /login', request.body);
+    var userName = request.body.userName;
+    var userArmy = armies.find((army) => {
+        return army.name === userName;
+    });
+    console.log('userArmy', userArmy);
+    if(!userArmy) {
+        userArmy = { 
+            name: userName, 
+            archers: 0, 
+            mages: 0, 
+            melee: 0, 
+            wins: 0 
+        };
+        armies.push(userArmy);
+    }
+    response.json(userArmy);
+})
 
 app.get('/armies', (request, response) => {
     response.json(armies);
@@ -60,11 +82,6 @@ app.post('/fight', (request, response) => {
     response.json(fightResult);
 });
 
-app.get('/main'), (request, response) => {
-    response.json({
-        doot : true
-    });
-}
 
 app.use(express.static('public'));
 

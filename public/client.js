@@ -1,28 +1,25 @@
+var yourArmy;
 var renderUserArmy = function() {
     var logDiv = document.getElementById('login-form');
     logDiv.style.display = "none";
-    var userArmy = localStorage.getItem(yourArmy);
-    var userArmyStrings = armies.map(function(army) {
-        return `<div>
-            <h4>${userArmy}</h4>
-            </div>
-        `
-    });
-    document.getElementById('armies').innerHTML = userArmyStrings.join('\n');
+    var userArmyString = renderSingleArmy(yourArmy);
+    document.getElementById('armies').innerHTML = userArmyString;
+}
+
+var renderSingleArmy = function(army) {
+    return `<div>
+        <h4>${army.name}</h4>
+        <p>This army has ${army.wins} wins</p>
+        <ul>
+            <li>archers:${army.archers}</li>
+            <li>mages:${army.mages}</li>
+            <li>melee:${army.melee}</li>
+        </ul>
+    </div>`;
 }
 
 var renderArmies = function(armies) {
-    var armyStrings = armies.map(function(army) {
-        return `<div>
-            <h4>${army.name}</h4>
-            <p>This army has ${army.wins} wins</p>
-            <ul>
-                <li>archers:${army.archers}</li>
-                <li>mages:${army.mages}</li>
-                <li>melee:${army.melee}</li>
-            </ul>
-        </div>`
-    });
+    var armyStrings = armies.map(renderSingleArmy);
     document.getElementById('armies').innerHTML = armyStrings.join('\n');
 }
 
@@ -33,24 +30,31 @@ fetch('/armies')
     })
 
 var handleLoginSubmit = function(submitEvent) {
-    var formJSON = {};
+    var formData = {};
     Object.values(submitEvent.target).forEach((field) => {
         if(field.name) {
             var value = field.value;
             if(field.type === 'checkbox') {
                 value = field.checked;
             }
-            formJSON[field.name] = value;
+            formData[field.name] = value;
         }
     })
-    console.log('handleLoginSubmit:', formJSON);
+    console.log('handleLoginSubmit:', formData);
     submitEvent.preventDefault();
-    
-    // var yourArmy = document.getElementById('userName').value;
-    // fetch('/main').then(function(response) {
-    //     response.json()
-    //         .then(renderUserArmy);
-    // })
+    fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+    }).then((response) => {
+        response.json()
+            .then((army) => {
+                yourArmy = army;
+                renderUserArmy();
+            });
+    })
 }
 
 var form = document.getElementById('login-form');
