@@ -41,7 +41,6 @@ app.use((request, response, next) => {
     var userName = request.cookies.userName;
     if (userName) {
         request.userArmy = findOrMakeArmyByUserName(userName);
-        console.log('This user is already logged in', request.userArmy);
     }
     next();
 })
@@ -116,9 +115,13 @@ var fight = function(armyA, armyB) {
 
 
 app.post('/fight', (request, response) => {
-    var fightResult = fight(armies[0], armies[1]);
-    armies[0] = fightResult.armyA;
-    armies[1] = fightResult.armyB;
+    // change to userArmy chosenArmy
+    var userArmy = request.userArmy;
+    var enemyName = request.body.fightTarget;
+    var enemyArmy = findOrMakeArmyByUserName(enemyName);
+    var fightResult = fight(userArmy, enemyArmy);
+    Object.assign(userArmy, fightResult.armyA);
+    Object.assign(enemyArmy, fightResult.armyB);
     response.json(fightResult);
 });
 

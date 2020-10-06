@@ -1,12 +1,13 @@
 # armyGame
 
 ## Current:
-Event listener to client side.  Server fetch() and then does the things.
+Choose opponent then implement 'fight'
 
+Later implement SQLite db
 
 ## api endpoints
 /army
-/conscript
+/recruit
 /levelup
 /choose_opponent
 /fight

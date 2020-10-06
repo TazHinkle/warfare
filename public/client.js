@@ -8,6 +8,65 @@ recruitButtonParent.addEventListener('click', (event) => {
     }
 });
 
+var fightButtonParent = document.getElementById('armies');
+var display = document.getElementById('armies');
+fightButtonParent.addEventListener('click', (event) => {
+    var fightTarget = event.target.dataset.target;
+    if(fightTarget) {
+        fight(fightTarget);
+    }
+})
+
+var handleLoginSubmit = function(submitEvent) {
+    var formData = {};
+    Object.values(submitEvent.target).forEach((field) => {
+        if(field.name) {
+            var value = field.value;
+            if(field.type === 'checkbox') {
+                value = field.checked;
+            }
+            formData[field.name] = value;
+        }
+    })
+    console.log('handleLoginSubmit:', formData);
+    submitEvent.preventDefault();
+    login(formData);
+}
+
+var form = document.getElementById('login-form');
+form.addEventListener('submit', handleLoginSubmit);
+
+var updateArmies = function() {
+    fetch('/armies')
+        .then((response) => {
+            return response.json();
+        })
+        .then(renderArmies);
+}
+
+var fight = function(fightTarget) {
+    fetch('/fight', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({fightTarget: fightTarget})
+    })
+    .then((response) => {
+        return response.json();
+    })
+    .then((data) => {
+        setYourArmy(data.armyA);
+        display.innerHTML = renderFightResults(data);
+    })
+}
+
+var setYourArmy = function(army) {
+    yourArmy = army;
+    localStorage.setItem('yourArmy', JSON.stringify(yourArmy));
+    renderUserArmy();
+}
+
 var login = function(formData) {
     fetch('/login', {
         method: 'POST',
@@ -15,14 +74,11 @@ var login = function(formData) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
-    }).then((response) => {
-        response.json()
-            .then((army) => {
-                yourArmy = army;
-                localStorage.setItem('yourArmy', JSON.stringify(yourArmy));
-                renderUserArmy();
-            });
     })
+        .then((response) => {
+            return response.json();
+        })
+        .then(setYourArmy);
 }
 
 if(yourArmy) {
@@ -44,11 +100,7 @@ var recruit = function(unitType) {
         console.log("recruit response", response);
         if (response.ok) {
             response.json()
-                .then((army) => {
-                    yourArmy = army;
-                    localStorage.setItem('yourArmy', JSON.stringify(yourArmy));
-                    renderUserArmy();
-                });
+                .then(setYourArmy);
         }
     })
 }
@@ -56,11 +108,30 @@ var recruit = function(unitType) {
 var renderUserArmy = function() {
     var logDiv = document.getElementById('login-form');
     logDiv.style.display = "none";
-    var userArmyString = renderSingleArmy(yourArmy);
+    var userArmyString = renderArmy(yourArmy);
     document.getElementById('your-army').innerHTML = userArmyString;
 }
 
-var renderSingleArmy = function(army) {
+var renderFightResults = function(fightData) {
+    return`
+        <div class="fight-results">
+            <h3>Winner: ${fightData.winner}</h3>
+            <p>This is the new state of the armies</p>
+            ${renderArmy(fightData.armyA)}
+            ${renderArmy(fightData.armyB)}
+            <div>
+                <a href="/">Back</a>
+            </div>
+        </div>
+    `
+}
+
+var renderArmy = function(army) {
+    var isLoggedIn = !!yourArmy;
+    var isNotYourArmy = (yourArmy && yourArmy.name) !== army.name;
+    var fightButton = isLoggedIn && isNotYourArmy
+        ? `<button class="fight-button" data-target=${army.name}>Fight</button>`
+        : '';
     return `<div>
         <h4>${army.name}</h4>
         <p>This army has ${army.wins} wins</p>
@@ -69,35 +140,13 @@ var renderSingleArmy = function(army) {
             <li>mages:${army.mages}</li>
             <li>melee:${army.melee}</li>
         </ul>
+        ${fightButton}
     </div>`;
 }
 
 var renderArmies = function(armies) {
-    var armyStrings = armies.map(renderSingleArmy);
+    var armyStrings = armies.map(renderArmy);
     document.getElementById('armies').innerHTML = armyStrings.join('\n');
 }
 
-fetch('/armies')
-    .then(function(response) {
-        response.json()
-            .then(renderArmies);
-    })
-
-var handleLoginSubmit = function(submitEvent) {
-    var formData = {};
-    Object.values(submitEvent.target).forEach((field) => {
-        if(field.name) {
-            var value = field.value;
-            if(field.type === 'checkbox') {
-                value = field.checked;
-            }
-            formData[field.name] = value;
-        }
-    })
-    console.log('handleLoginSubmit:', formData);
-    submitEvent.preventDefault();
-    login(formData);
-}
-
-var form = document.getElementById('login-form');
-form.addEventListener('submit', handleLoginSubmit);
+updateArmies();
