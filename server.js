@@ -1,20 +1,26 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const low = require('lowdb');
+const FileSync = require('lowdb/adapters/FileSync');
 const app = express();
 const port = 3000;
+const adapter = new FileSync(
+    'db.json',
+    {
+        defaultValue: {
+            armies: []
+        }
+    }
+);
+const db = low(adapter);
 
 app.use(express.json());
 app.use(cookieParser());
 
-var armies = [
-    { name: 'bob', archers: 33, mages: 12, melee: 20, wins: 0 },
-    { name: 'goats', archers: 33, mages: 22, melee: 20, wins: 0 },
-];
-
 var findOrMakeArmyByUserName = function(userName) {
-    var userArmy = armies.find((army) => {
-        return army.name === userName;
-    });
+
+    var userArmy = db.get('armies').find({name: userName}).value();
+
     if(!userArmy) {
         userArmy = { 
             name: userName, 
@@ -23,7 +29,7 @@ var findOrMakeArmyByUserName = function(userName) {
             melee: 0, 
             wins: 0 
         };
-        armies.push(userArmy);
+        db.get('armies').push(userArmy).write();
     }
     return userArmy;
 }
@@ -59,17 +65,18 @@ app.post('/recruit', (request, response) => {
         response.status(403);
         response.json({error: 'you must be logged in'});
     } else {
-        console.log('the is the army we are recruiting into', userArmy);
-        
         if (unitType) {
-            userArmy[unitType] = userArmy[unitType] + 1;
+            db.get('armies')
+                .find({ name: userArmy.name })
+                .assign({ [unitType]: (userArmy[unitType] || 0) + 1 })
+                .write();
         }
         response.json(userArmy);
     }
 })
 
 app.get('/armies', (request, response) => {
-    response.json(armies);
+    response.json(db.get('armies').value());
 });
 
 function jsonClone(input) {
@@ -115,13 +122,18 @@ var fight = function(armyA, armyB) {
 
 
 app.post('/fight', (request, response) => {
-    // change to userArmy chosenArmy
     var userArmy = request.userArmy;
     var enemyName = request.body.fightTarget;
     var enemyArmy = findOrMakeArmyByUserName(enemyName);
     var fightResult = fight(userArmy, enemyArmy);
-    Object.assign(userArmy, fightResult.armyA);
-    Object.assign(enemyArmy, fightResult.armyB);
+    db.get('armies')
+        .find({ name: userArmy.name })
+        .assign(fightResult.armyA)
+        .write();
+    db.get('armies')
+        .find({ name: enemyArmy.name })
+        .assign(fightResult.armyB)
+        .write();
     response.json(fightResult);
 });
 

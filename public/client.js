@@ -103,6 +103,7 @@ var recruit = function(unitType) {
                 .then(setYourArmy);
         }
     })
+    updateArmies();
 }
 
 var renderUserArmy = function() {
