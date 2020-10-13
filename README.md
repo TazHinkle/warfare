@@ -1,9 +1,11 @@
 # armyGame
 
 ## Current:
-Choose opponent then implement 'fight'
+- Make visuals more attractive (css)
 
-Later implement SQLite db
+- Decide between relying on background color or trying to come up with a background image
+
+- Make some sort of token/avatars that will display in relation to number of troops recruited.
 
 ## api endpoints
 /army
@@ -16,19 +18,20 @@ Later implement SQLite db
 /rage_quit
  What I want in the game:
 
- -To have a user be able to log in and retrieve the information for their army (which persists)
+ + To have a user be able to log in and retrieve the information for their army (which persists)
  
- -An interactive screen where a user can grow the army
+ + An interactive screen where a user can grow the army
  
- -An interactive page where a user can choose an opponent
+ + An interactive page where a user can choose an opponent
  
- -A time based (probably...) system for awarding modification points.
+ - A time based (probably...) system for awarding modification points.
 
 ### Other items:
- -A way to limit how many times one person can be fought (so they don't log in and have no army anymore...)
+ - A way to limit how many times one person can be fought (so they don't log in and have no army anymore...)
  
- -A way to match users with opponents of somewhat comparable levels.
- Level up mechanism and limits
+ - A way to match users with opponents of somewhat comparable levels.
+
+ - Level up mechanism and limits
 
  ### Implement on a Grid -- shelved
 

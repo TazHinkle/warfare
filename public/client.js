@@ -133,7 +133,7 @@ var renderArmy = function(army) {
     var fightButton = isLoggedIn && isNotYourArmy
         ? `<button class="fight-button" data-target=${army.name}>Fight</button>`
         : '';
-    return `<div>
+    return `<div class="army">
         <h4>${army.name}</h4>
         <p>This army has ${army.wins} wins</p>
         <ul>
@@ -141,13 +141,16 @@ var renderArmy = function(army) {
             <li>mages:${army.mages}</li>
             <li>melee:${army.melee}</li>
         </ul>
-        ${fightButton}
+        <div>${fightButton}</div>
     </div>`;
 }
 
 var renderArmies = function(armies) {
     var armyStrings = armies.map(renderArmy);
-    document.getElementById('armies').innerHTML = armyStrings.join('\n');
+    document.getElementById('armies').innerHTML = `
+        <h4>All Armies</h4>
+        ` 
+        + armyStrings.join('\n');
 }
 
 updateArmies();
