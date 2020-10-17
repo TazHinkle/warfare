@@ -3,7 +3,10 @@ var recruitButtonParent = document.getElementById('recruit');
 recruitButtonParent.addEventListener('click', (event) => {
     var unitType = event.target.dataset.type;
     console.log('unitType is', unitType);
-    if(unitType) {
+    if(unitType === 'goats') {
+        var goatSpan = document.getElementById('goat-span');
+        goatSpan.innerHTML = 'GOATS!!'
+    } else if(unitType) {
         recruit(unitType);
     }
 });
@@ -140,6 +143,7 @@ var renderArmy = function(army) {
             <li>archers:${army.archers}</li>
             <li>mages:${army.mages}</li>
             <li>melee:${army.melee}</li>
+            <li>Upgrade Points:${army.upgradePoints}</li>
         </ul>
         <div>${fightButton}</div>
     </div>`;

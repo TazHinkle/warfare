@@ -5,7 +5,7 @@ const FileSync = require('lowdb/adapters/FileSync');
 const app = express();
 const port = 3000;
 const adapter = new FileSync(
-    'db.json',
+    '.data/db.json',
     {
         defaultValue: {
             armies: []
@@ -17,20 +17,43 @@ const db = low(adapter);
 app.use(express.json());
 app.use(cookieParser());
 
+var updatePoints = function(userArmy) {
+    if(Date.now() - userArmy.lastLogin >= userArmy.pointCounter) {
+        db.get('armies')
+                .find({ name: userArmy.name })
+                .assign({ upgradePoints: userArmy.upgradePoints + 24})
+                .assign({ pointCounter: 86400000})
+                .write();
+    } else {
+        db.get('armies')
+                .find({ name: userArmy.name })
+                .assign({ pointCounter: userArmy.pointCounter - (Date.now() - userArmy.lastLogin)})
+                .write();
+    }
+}
+
 var findOrMakeArmyByUserName = function(userName) {
 
     var userArmy = db.get('armies').find({name: userName}).value();
-
-    if(!userArmy) {
+    if(userArmy) {
+        updatePoints(userArmy);
+    } else if(!userArmy) {
         userArmy = { 
             name: userName, 
             archers: 0, 
             mages: 0, 
             melee: 0, 
-            wins: 0 
+            wins: 0,
+            upgradePoints: 24,
+            lastLogin: Date.now(),
+            pointCounter: 86400000
         };
         db.get('armies').push(userArmy).write();
     }
+    db.get('armies')
+                .find({ name: userArmy.name })
+                .assign({ lastLogin: Date.now()})
+                .write();
     return userArmy;
 }
 
@@ -39,7 +62,7 @@ app.post('/login', (request, response) => {
     console.log('Here be the cookies', request.cookies);
     var userName = request.body.userName;
     var userArmy = findOrMakeArmyByUserName(userName);
-    response.append('Set-Cookie', `userName=${userName}; Path=/; HttpOnly`);
+    response.append('Set-Cookie', `userName=${userName}; Path=/; SameSite=Strict`);
     response.json(userArmy);
 })
 
@@ -58,20 +81,27 @@ app.post('/recruit', (request, response) => {
     // }
     var userArmy = request.userArmy;
     var unitType = request.body.unitType;
-    if (!validUnitTypes.includes(unitType)) {
-        response.status(400);
-        response.json({error: 'Unit type is invalid'});
-    } else if(!userArmy) {
-        response.status(403);
-        response.json({error: 'you must be logged in'});
-    } else {
-        if (unitType) {
-            db.get('armies')
-                .find({ name: userArmy.name })
-                .assign({ [unitType]: (userArmy[unitType] || 0) + 1 })
-                .write();
+    var upgradeable = userArmy.upgradePoints;
+    if(upgradeable >= 1) {
+        if (!validUnitTypes.includes(unitType)) {
+            response.status(400);
+            response.json({error: 'Unit type is invalid'});
+        } else if(!userArmy) {
+            response.status(403);
+            response.json({error: 'you must be logged in'});
+        } else {
+            if (unitType) {
+                db.get('armies')
+                    .find({ name: userArmy.name })
+                    .assign({ [unitType]: (userArmy[unitType] || 0) + 1 })
+                    .assign({ upgradePoints: userArmy.upgradePoints - 1 })
+                    .write();
+            }
+            response.json(userArmy);
         }
-        response.json(userArmy);
+    } else {
+        response.status(400);
+            response.json({error: 'Not enough Upgrade Points'});
     }
 })
 
