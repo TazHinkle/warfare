@@ -1,5 +1,7 @@
 # armyGame
 
+- Homed at https://continuous-charm-ptarmigan.glitch.me/
+
 ## Current:
 - Make visuals more attractive (css)
 

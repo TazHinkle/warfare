@@ -18,6 +18,10 @@ ul {
     display: block;
 }
 
+#content #login-form {
+    padding-bottom: 10px;
+}
+
 .army {
     border-width: 2px;
     border-color: rgb(6, 167, 241);

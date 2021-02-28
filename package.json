@@ -14,5 +14,7 @@
         "express": "^4.17.1",
         "lowdb": "^1.0.0"
     },
-    "engines": { "node": "12.x" }
+    "engines": {
+        "node": "12.x"
+    }
 }
