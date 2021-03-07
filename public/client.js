@@ -10,7 +10,7 @@ recruitButtonParent.addEventListener('click', (event) => {
 });
 
 var fightButtonParent = document.getElementById('armies');
-var display = document.getElementById('armies');
+var armiesParent = document.getElementById('armies');
 fightButtonParent.addEventListener('click', (event) => {
     var fightTarget = event.target.dataset.target;
     if(fightTarget) {
@@ -58,7 +58,7 @@ var fight = function(fightTarget) {
     })
     .then((data) => {
         setYourArmy(data.armyA);
-        display.innerHTML = renderFightResults(data);
+        armiesParent.innerHTML = renderFightResults(data);
     })
 }
 
@@ -66,7 +66,6 @@ var setYourArmy = function(army) {
     yourArmy = army;
     localStorage.setItem('yourArmy', JSON.stringify(yourArmy));
     renderUserArmy();
-    updateArmies();
 }
 
 var login = function(formData) {
@@ -80,7 +79,8 @@ var login = function(formData) {
         .then((response) => {
             return response.json();
         })
-        .then(setYourArmy);
+        .then(setYourArmy)
+        .then(updateArmies);
 }
 
 if(yourArmy) {
@@ -166,7 +166,7 @@ var renderArmy = function(army) {
 
 var renderArmies = function(armies) {
     var armyStrings = armies.map(renderArmy);
-    document.getElementById('armies').innerHTML = `
+    armiesParent.innerHTML = `
         <h3>All Armies</h3>
         <div class="row">
             ${armyStrings.join('\n')}
