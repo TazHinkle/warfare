@@ -1,15 +1,15 @@
-const fs = require('fs');
+// const fs = require('fs');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 const app = express();
 const port = 3000;
-fs.mkdir('.data', (error) => {
-    if(error) {
-        throw error;
-    }
-});
+// fs.mkdir('.data', (error) => {
+//     if(error) {
+//         throw error;
+//     }
+// });
 const adapter = new FileSync(
     '.data/db.json',
     {

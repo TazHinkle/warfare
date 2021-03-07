@@ -5,52 +5,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="styles.css" />
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/darkly/bootstrap.min.css">
+	<style>
+		body {
+			margin: auto;
+		}
+	</style>
 </head>
 
 <body>
-    <div id="content">
-        <form id="login-form">
-            <label>
-                <span>Username</span>
-                <span>
-                    <input
-                        id="userName"
-                        type="text"
-                        name="userName"
-                    />
-                </span>
-            </label>
-            <label>
-                <span>Remember Me</span>
-                <span>
-                    <input
-                        type="checkbox"
-                        name="rememberMe"
-                    />
-                </span>
-            </label>
-            <label>
-                <span>Server</span>
-                <span>
-                    <select name="server">
-                        <option>US</option>
-                        <option>Asia</option>
-                        <option>Galifrey</option>
-                    </select>
-                </span>
-            </label>
-            <button type="submit">Submit</button>
-        </form>
-        <div id="your-army"></div>
-        <div id="recruit">
-            <button class="recruit-button" data-type="archers">Recruit Archer</button>
-            <button class="recruit-button" data-type="mages">Recruit Mage</button>
-            <button class="recruit-button" data-type="melee">Recruit Melee</button>
-            <button class="recruit-button" data-type="goats">Goats</button>
-        </div>
-        <span id="goat-span"></span>
-        <div id="armies"></div>
+    <div class="container">
+		<div class="row">
+			<div class="col-12 pb-4">
+				<form id="login-form">
+					<fieldset>
+						<legend>Login</legend>
+						<div class="form-group">
+							<label for="userName">User Name</label>
+							<input
+								class="form-control"
+								id="userName"
+								type="text"
+								name="userName"
+								style='width:50%;'
+							>
+						</div>
+						<button type="submit" class="btn btn-primary">Submit</button>
+					</fieldset>
+				</form>
+			</div>
+			<div id="your-account" class="col-12 d-none">
+				<h1>Your Army</h1>
+				<div id="your-army"></div>
+				<div
+					id="recruit"
+					class="row"
+				>
+					<div class="col-4">
+						<button class="btn btn-secondary w-100 recruit-button" data-type="archers">Recruit Archer</button>
+					</div>
+					<div class="col-4">
+						<button class="btn btn-secondary w-100 recruit-button" data-type="mages">Recruit Mage</button>
+					</div>
+					<div class="col-4">
+						<button class="btn btn-secondary w-100 recruit-button" data-type="melee">Recruit Melee</button>
+					</div>
+				</div>
+				<hr>
+			</div>
+			<div id="armies" class="col-12"></div>
+		</div>
     </div>
     <script src="client.js"></script>
 </body>
