@@ -3,3 +3,4 @@ db.json
 *.iml
 *.xml
 .data/
+.idea/
